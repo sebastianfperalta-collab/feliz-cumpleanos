@@ -132,7 +132,7 @@ export function texBrillo() {
 
 export function crearVelas(pastel, n) {
   const g = new THREE.Group(), V = new Lote(), llamas = [];
-  const tex = texLlama(), cols = [0xff8fb1, 0x7ff6ff, 0xffd166, 0xb7a6ff];
+  const tex = texLlama(), brillo = texBrillo(), cols = [0xff8fb1, 0x7ff6ff, 0xffd166, 0xb7a6ff];
   const anillos = n > 20 ? [[20, 0.47], [n - 20, 0.27]] : [[n, 0.42]];
   let k = 0;
   for (const [cant, r] of anillos) for (let i = 0; i < cant; i++, k++) {
@@ -141,8 +141,10 @@ export function crearVelas(pastel, n) {
     V.add(new THREE.CylinderGeometry(0.016, 0.016, h, 8, 4), (xx, y) => (Math.floor((y + h / 2) * 40) % 2 ? c : 0xffffff), null, M4(x, h / 2, z), { suave: true });
     V.add(new THREE.CylinderGeometry(0.003, 0.003, 0.025, 3), 0x222222, null, M4(x, h + 0.012, z), {});
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
-    s.scale.set(0.05, 0.1, 1); s.position.set(x, h + 0.05, z); g.add(s);
-    llamas.push({ s, on: true, f: Math.random() * 10, base: new THREE.Vector3(x, h + 0.05, z) });
+    s.scale.set(0.085, 0.17, 1); s.position.set(x, h + 0.085, z); g.add(s);
+    const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: brillo, color: 0xff9a3a, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+    gl.scale.setScalar(0.3); gl.position.set(x, h + 0.08, z); g.add(gl);
+    llamas.push({ s, g: gl, on: true, f: Math.random() * 10, base: new THREE.Vector3(x, h + 0.085, z) });
   }
   g.add(V.malla(lam()));
   g.position.y = pastel.tope;

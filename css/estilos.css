@@ -100,3 +100,9 @@ h2 { font-size: 30px; color: var(--oro); }
 #sueno p { font-family: 'Caveat', cursive; font-weight: 700; font-size: 40px; color: #2b1a4f; text-align: center; padding: 24px; margin: 0; }
 #vr.difuso canvas { filter: blur(10px) saturate(1.4) hue-rotate(25deg); transition: filter 1.2s; }
 #vr canvas { transition: filter 1.2s; }
+
+.aire { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; font-weight: 800; color: #cfe6ff; }
+.aire div { flex: 1; height: 7px; border-radius: 99px; background: rgba(8, 26, 38, .85); border: 1px solid var(--borde); overflow: hidden; }
+#soplido-aire { display: block; height: 100%; width: 100%; background: #9fd8ff; border-radius: 99px; transition: background .2s; }
+#soplido-aire.vacio { background: #ff8a8a; }
+.medidor .zona { transition: width .3s; }

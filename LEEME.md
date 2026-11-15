@@ -5,7 +5,7 @@ Juego web de cumpleaños para el celular. Se juega en un bosque de noche con luc
 ## Retos
 1. **El bosque**: hay que tocar al erizo cuando se asoma entre los arbustos, antes de que se enrolle. Al terminar se desbloquea la foto 1.
 2. **La bolita**: el erizo va enrollado y se guía inclinando el celular, o manteniendo presionado el lado izquierdo o derecho de la pantalla. Hay que esquivar troncos y piedras. Al chocar, vuelve al último farol. Al terminar se desbloquea la foto 2.
-3. **La lluvia de golosinas**: se mueve el plato para atrapar golosinas, y cada una suma una capa al pastel. Las piedras grises restan 3 segundos. Si no se logra a tiempo, se puede reintentar. Al terminar se desbloquea la foto 3.
+3. **La lluvia de dulces**: se mueve el plato para atrapar dulces, y cada una suma una capa al pastel. Las piedras grises restan 3 segundos. Si no se logra a tiempo, se puede reintentar. Al terminar se desbloquea la foto 3.
 4. **Las velas**: se sopla al micrófono para apagar las 32 velas. Si se sopla demasiado fuerte, algunas se vuelven a encender. También hay un botón para soplar sin micrófono.
 5. **Carta final**: lleva las 3 fotos, el mensaje y la firma, y se puede descargar como imagen PNG.
 

@@ -327,7 +327,7 @@ async function fase2() {
   });
 }
 
-// ───────── Reto 3: lluvia de golosinas ─────────
+// ───────── Reto 3: lluvia de dulces ─────────
 async function fase3() {
   const meta = RAPIDO ? 10 : cfg.retos.golosinasMeta, T = RAPIDO ? 30 : cfg.retos.segundosGolosinas;
   const E = 0.72; // escala del pastel
@@ -340,8 +340,8 @@ async function fase3() {
     lim = Math.max(0.7, anchoVisible(7.0) - 0.62);
     erizo.visible = true; enrollar(false); erizo.scale.setScalar(0.8); erizo.position.set(-lim + 0.1, 0, -1.6); erizo.lookAt(0, 0, 7);
   };
-  await transicion('Reto 3 · La lluvia de golosinas', preparar);
-  await tarjeta({ sobre: 'Reto 3 de 4', titulo: 'La lluvia de golosinas', html: `Para encontrar el pastel hay que armarlo. Mueve el plato y <b>atrapa las golosinas</b>: cada una suma al pastel.<br><br>Arrastra el dedo${incl.ok ? ' o inclina el celular' : ''}. <b>No atrapes las piedras grises</b>: te quitan 3 segundos.<br><br>Necesitas <b>${meta}</b> en ${T} segundos.` });
+  await transicion('Reto 3 · La lluvia de dulces', preparar);
+  await tarjeta({ sobre: 'Reto 3 de 4', titulo: 'La lluvia de dulces', html: `Para encontrar el pastel hay que armarlo. Mueve el plato y <b>atrapa los dulces</b>: cada una suma al pastel.<br><br>Arrastra el dedo${incl.ok ? ' o inclina el celular' : ''}. <b>No atrapes las piedras grises</b>: te quitan 3 segundos.<br><br>Necesitas <b>${meta}</b> en ${T} segundos.` });
 
   while (true) {
     const res = await ronda();
@@ -357,7 +357,7 @@ async function fase3() {
       let px = 0, n = 0, c = 0, tiempo = T, spawn = 0.5, sacP = 0, arrastre = false;
       const items = [];
       const umbrales = [0.2, 0.4, 0.6, 0.8, 1].map((u) => Math.round(meta * u));
-      const info = () => hud('Reto 3 · Golosinas', `🎂 ${n}/${meta} · ⏱ ${Math.ceil(Math.max(0, tiempo))}`);
+      const info = () => hud('Reto 3 · Dulces', `🎂 ${n}/${meta} · ⏱ ${Math.ceil(Math.max(0, tiempo))}`);
       info();
       fase = {
         abajo(x) { arrastre = true; this.mover(x); },
@@ -428,14 +428,14 @@ async function fase4() {
     tocon.visible = true; tocon.position.set(0, 0, 0);
     pastel.grupo.visible = true; pastel.grupo.scale.setScalar(1); pastel.grupo.position.set(0, 0.6, 0); pastel.mostrar(5);
     if (!velas) { velas = crearVelas(pastel, n); pastel.grupo.add(velas.grupo); }
-    velas.grupo.visible = true; velas.llamas.forEach((l) => { l.on = true; l.s.visible = true; });
+    velas.grupo.visible = true; velas.llamas.forEach((l) => { l.on = true; l.s.visible = true; if (l.g) l.g.visible = true; });
     erizo.visible = true; enrollar(false); erizo.scale.setScalar(0.72); erizo.position.set(0.78, 0, 1.05); erizo.lookAt(0, 0, 6); erizo.userData.gorro.visible = true;
     const d = clamp(1.5 / (Math.tan(THREE.MathUtils.degToRad(27.5)) * camara.aspect), 2.8, 6.8);
     enfocar(V(0, 1.25 + d * 0.22, d), V(0.15, 1.05, 0), true);
     mundo.calida.position.set(0, 1.9, 0.6);
     hud('Reto 4 · Las velas', `🕯️ ${n} encendidas`);
   });
-  const modo = await tarjeta({ sobre: 'Reto 4 de 4', titulo: `Las ${n} velas`, html: `El pastel está listo y tu erizo ya tiene su gorro. Ahora <b>sopla</b> para apagar las velas.<br><br>Sopla <b>suave y constante</b>: si soplas demasiado fuerte, algunas se vuelven a encender. Mantén la barra en la zona verde.`, botones: [['mic', 'Soplar al micrófono'], ['boton', 'Soplar con un botón', 'secundario']] });
+  const modo = await tarjeta({ sobre: 'Reto 4 de 4', titulo: `Las ${n} velas`, html: `El pastel está listo y tu erizo ya tiene su gorro. Ahora <b>sopla</b> para apagar las velas.<br><br>Mantén la barra en la <b>zona verde</b>, que se hace más angosta a medida que se apagan. Cada soplido gasta <b>aire</b>: cuando se acabe, para y respira. Si soplas muy fuerte o tardas mucho, algunas velas <b>se vuelven a encender</b>.`, botones: [['mic', 'Soplar al micrófono'], ['boton', 'Soplar con un botón', 'secundario']] });
   let an = null;
   if (modo === 'mic') { an = await abrirMicrofono(); if (!an) toast('No pude usar el micrófono. Sopla con el botón.', 2600); }
   const btn = $('#btn-soplar'); mostrar($('#soplido')); mostrar(btn, !an);
@@ -445,9 +445,10 @@ async function fase4() {
   const Z0 = 0.22, Z1 = 0.95, MAX = 1.2;
   const buf = an ? new Float32Array(an.fftSize) : null;
   let piso = 0.01, cal = 0.6;
+  const llama = (l, on) => { l.on = on; l.s.visible = on; if (l.g) l.g.visible = on; };
   return new Promise((resolve) => {
-    let nivel = 0, acc = 0, sobre = 0, enc = n, ult = performance.now();
-    const barra = $('#soplido-barra'), txt = $('#soplido-txt');
+    let nivel = 0, acc = 0, sobre = 0, enc = n, ult = performance.now(), aire = 1, quieto = 0, revive = 0, sinAire = false;
+    const barra = $('#soplido-barra'), txt = $('#soplido-txt'), barAire = $('#soplido-aire'), zonaEl = $('#soplido .zona');
     fase = {
       update(_dt, t) {
         const ahora = performance.now(), dt = Math.min(0.25, (ahora - ult) / 1000); ult = ahora;
@@ -459,20 +460,30 @@ async function fase4() {
           else objetivo = clamp((rms - piso * 1.6) * 5, 0, MAX);
           nivel += (objetivo - nivel) * Math.min(1, dt * 10);
         } else nivel = clamp(nivel + (pres ? 0.95 : -1.5) * dt, 0, MAX);
-        barra.style.width = (nivel / MAX * 100) + '%'; barra.classList.toggle('fuerte', nivel >= Z1);
-        const zona = nivel > Z0 && nivel < Z1;
-        txt.textContent = nivel >= Z1 ? '¡Muy fuerte!' : zona ? '¡Así, sigue!' : (an ? 'Sopla suave y constante' : 'Mantén presionado y suelta a tiempo');
+        // la zona verde se angosta a medida que se apagan las velas
+        const zf = Z1 - (Z1 - 0.66) * (1 - enc / n);
+        zonaEl.style.left = (Z0 / MAX * 100) + '%'; zonaEl.style.width = ((zf - Z0) / MAX * 100) + '%';
+        barra.style.width = (nivel / MAX * 100) + '%'; barra.classList.toggle('fuerte', nivel >= zf);
+        // aire: se gasta soplando y se recupera al dejar de soplar
+        if (nivel > Z0 * 0.6) aire = Math.max(0, aire - dt * 0.62); else aire = Math.min(1, aire + dt * 0.55);
+        if (aire <= 0) sinAire = true; else if (aire > 0.45) sinAire = false;
+        barAire.style.width = (aire * 100) + '%'; barAire.classList.toggle('vacio', sinAire);
+        const zona = nivel > Z0 && nivel < zf && !sinAire;
+        txt.textContent = sinAire ? '¡Sin aire! Para y respira' : nivel >= zf ? '¡Muy fuerte!' : zona ? '¡Así, sigue!' : (quieto > 2.2 && enc < n ? '¡Sopla otra vez, se reavivan!' : (an ? 'Sopla suave y constante' : 'Mantén presionado y suelta a tiempo'));
+        // si dejas de soplar mucho rato, las velas reviven
+        if (nivel < Z0 && enc < n) { quieto += dt; if (quieto > 3.2) { revive += dt; if (revive > 0.9) { revive = 0; const l = velas.llamas.find((q) => !q.on); if (l) { llama(l, true); enc++; audio.reaviva(); } } } }
+        else { quieto = 0; revive = 0; }
         if (zona) {
           acc += dt;
-          while (acc > 0.09 && enc > 0) {
-            acc -= 0.09; const vivas = velas.llamas.filter((l) => l.on); const l = vivas[Math.floor(Math.random() * vivas.length)];
-            l.on = false; l.s.visible = false; enc--; audio.puff();
+          while (acc > 0.11 && enc > 0) {
+            acc -= 0.11; const vivas = velas.llamas.filter((l) => l.on); const l = vivas[Math.floor(Math.random() * vivas.length)];
+            llama(l, false); enc--; audio.puff();
             const p = new THREE.Vector3(); l.s.getWorldPosition(p); chispas.emitir(p, 5, 0x9aa3ad, 0.4);
           }
         } else acc = Math.max(0, acc - dt);
-        if (nivel >= Z1 && enc < n) { sobre += dt; if (sobre > 0.55) { sobre = 0; let k = 3; for (const l of velas.llamas) if (!l.on && k-- > 0) { l.on = true; l.s.visible = true; enc++; } audio.reaviva(); toast('Muy fuerte: algunas se encendieron otra vez', 1500); } }
+        if (nivel >= zf && enc < n) { sobre += dt; if (sobre > 0.5) { sobre = 0; let k = 3; for (const l of velas.llamas) if (!l.on && k-- > 0) { llama(l, true); enc++; } audio.reaviva(); toast('Muy fuerte: algunas se encendieron otra vez', 1500); } }
         else sobre = Math.max(0, sobre - dt);
-        for (const l of velas.llamas) if (l.on) { const f = 1 + Math.sin(t * 18 + l.f) * 0.12 - nivel * 0.25; l.s.scale.set(0.05 * f, 0.1 * f, 1); l.s.position.x = l.base.x - nivel * 0.025; }
+        for (const l of velas.llamas) if (l.on) { const f = 1 + Math.sin(t * 18 + l.f) * 0.14 + Math.sin(t * 7.3 + l.f * 2) * 0.06 - nivel * 0.3; l.s.scale.set(0.085 * f, 0.17 * f, 1); l.s.position.x = l.base.x - nivel * 0.04; if (l.g) { const gf = 0.8 + Math.sin(t * 11 + l.f) * 0.15; l.g.scale.setScalar(0.3 * gf); } }
         mundo.calida.intensity = 3 + enc / n * 6;
         hud(null, `🕯️ ${enc} encendidas`);
         if (enc === 0) terminar();
@@ -483,7 +494,7 @@ async function fase4() {
       if (micStream) { micStream.getTracks().forEach((t) => t.stop()); micStream = null; }
       audio.exito(); audio.cumple();
       for (let k = 0; k < 5; k++) setTimeout(() => chispas.emitir(V((Math.random() - 0.5) * 2, 1.4 + Math.random(), (Math.random() - 0.5)), 70, [0xffd27a, 0xff8fb1, 0x7ff6ff, 0xb7a6ff, 0xffffff], 3.2), k * 350);
-      toast(`¡Feliz cumpleaños, ${cfg.nombre}!`, 3000);
+      toast('¡Feliz cumple...!', 3000);
       mundo.calida.intensity = 9;
       await espera(3600); resolve();
     }
@@ -543,7 +554,7 @@ async function despertar() {
 // ───────── Carta final ─────────
 function mostrarCarta() {
   progreso(4); mostrar($('#hud'), false);
-  $('#carta-titulo').textContent = `¡Feliz cumpleaños, ${cfg.nombre}!`;
+  $('#carta-titulo').textContent = '¡Feliz cumple...!';
   $('#carta-fotos').innerHTML = cfg.fotos.map((f) => `<img src="${esc(f.src)}" alt="">`).join('');
   $('#carta-texto').innerHTML = cfg.mensaje.map((p) => `<p>${esc(p)}</p>`).join('');
   $('#carta-firma').textContent = `Con cariño, ${cfg.firma}`;
@@ -559,7 +570,7 @@ async function descargarCarta() {
   for (let i = 0; i < 160; i++) { const px = Math.random() * W, py = Math.random() * H, r = 2 + Math.random() * 7; const rg = x.createRadialGradient(px, py, 0, px, py, r * 3); const col = Math.random() < 0.7 ? '255,210,122' : '127,246,255'; rg.addColorStop(0, `rgba(${col},0.9)`); rg.addColorStop(1, `rgba(${col},0)`); x.fillStyle = rg; x.beginPath(); x.arc(px, py, r * 3, 0, 7); x.fill(); }
   x.textAlign = 'center'; x.fillStyle = '#7ff6ff'; x.font = '800 30px Nunito, sans-serif'; x.fillText(`${cfg.edad} VELAS APAGADAS`, W / 2, 120);
   x.fillStyle = '#ffd27a'; x.font = '700 78px Fredoka, sans-serif'; x.shadowColor = 'rgba(255,190,90,0.6)'; x.shadowBlur = 30;
-  x.fillText(`¡Feliz cumpleaños,`, W / 2, 215); x.fillText(`${cfg.nombre}!`, W / 2, 305); x.shadowBlur = 0;
+  x.fillText('¡Feliz cumple...!', W / 2, 260); x.shadowBlur = 0;
   // polaroids
   const pos = [[250, 560, -0.12], [540, 545, 0.05], [830, 560, -0.04]];
   imgs.forEach((im, i) => {
@@ -589,7 +600,7 @@ $('#carta-ver').onclick = () => { mostrar($('#carta'), false); toast('Recarga la
 
 // ───────── Inicio ─────────
 $('#intro-titulo').textContent = `El erizo de ${cfg.nombre}`;
-$('#intro-bajada').innerHTML = `Es la noche antes de tu cumpleaños, ${esc(cfg.nombre)}. Tu erizo se acurrucó en su camita… y empezó a soñar. En el sueño, tu pastel desapareció en el bosque. <b>Supera los 4 retos</b> y desbloquea los recuerdos en el camino.`;
+$('#intro-bajada').innerHTML = `Es la noche antes de tu cumpleaños. Tu erizo se acurrucó en su camita… y empezó a soñar. En el sueño, tu pastel desapareció en el bosque. <b>Supera los 4 retos</b> y desbloquea los recuerdos en el camino.`;
 escenaCama(true); respirar(); cam.orbita = false;
 $('#btn-sonido').onclick = () => { audio.setMudo(!audio.mudo); $('#btn-sonido').textContent = audio.mudo ? '🔇' : '🔊'; };
 
