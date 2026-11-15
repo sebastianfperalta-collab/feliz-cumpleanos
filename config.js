@@ -30,6 +30,17 @@ window.DEMO_CONFIG = {
     erizosMeta: 8,          // reto 1: veces que hay que atrapar al erizo
     largoSendero: 64,       // reto 2: metros que rueda la bolita
     golosinasMeta: 20,      // reto 3: golosinas para armar el pastel
-    segundosGolosinas: 45   // reto 3: tiempo disponible
+    segundosGolosinas: 45,  // reto 3: tiempo disponible
+    segundosRecorrido: 26   // duración de cada recorrido por el bosque
+  },
+
+  // Recorridos por el bosque entre retos (3). Cada uno lleva 2 letreros con frases tuyas.
+  recorrido: {
+    nombres: ["Camino de las luciérnagas", "Bosque de los hongos", "Hacia el claro del pastel"],
+    letreros: [
+      ["Sigue las luces: el bosque te conoce", "Cada paso suma una sonrisa"],
+      ["Los hongos brillan para darte la bienvenida", "Lo bueno llega caminando despacio"],
+      ["Ya huele a pastel...", "El claro está al final del sendero"]
+    ]
   }
 };

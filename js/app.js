@@ -142,7 +142,7 @@ async function fase1() {
       const a = crearArbusto(vertical ? 0.95 : 1.1); a.position.set(x, 0, z); escondites.add(a); spots.push(V(x, 0, z));
     }
     escena.add(escondites);
-    erizo.visible = false; erizo.scale.setScalar(vertical ? 0.85 : 1); enrollar(false);
+    erizo.visible = false; erizo.scale.setScalar(vertical ? 0.85 : 1); enrollar(false); mundo.calida.position.set(0, 2.4, -2.5);
     hud('Reto 1 · El bosque', `🦔 0/${meta}`);
   });
   await tarjeta({ sobre: 'Reto 1 de 4', titulo: 'El bosque', html: `Tu erizo está jugando a esconderse entre los arbustos.<br><b>Tócalo</b> cada vez que se asome, antes de que se enrolle y desaparezca.<br><br>Atrápalo <b>${meta} veces</b>.` });
@@ -173,6 +173,81 @@ async function fase1() {
       chispas.emitir(erizo.position.clone().add(V(0, 0.6, 0)), 80, [0xffd27a, 0x7ff6ff, 0xff8fb1], 3);
       toast('¡Lo encontraste!'); await espera(1400);
       escena.remove(escondites); erizo.scale.setScalar(1); resolve();
+    }
+  });
+}
+
+
+// ───────── Recorrido por el bosque (entre retos) ─────────
+function crearLetrero(texto) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#5a3d27'; x.beginPath(); x.roundRect(8, 8, 496, 240, 26); x.fill();
+  x.strokeStyle = '#c9a36e'; x.lineWidth = 8; x.beginPath(); x.roundRect(18, 18, 476, 220, 20); x.stroke();
+  x.fillStyle = '#ffe9b8'; x.textAlign = 'center'; x.font = '600 46px Fredoka, sans-serif';
+  const ws = texto.split(' '), ls = []; let l = '';
+  for (const w of ws) { const t = l ? l + ' ' + w : w; if (x.measureText(t).width > 400 && l) { ls.push(l); l = w; } else l = t; }
+  if (l) ls.push(l);
+  const y0 = 128 - (ls.length - 1) * 30 + 16; ls.forEach((t, i) => x.fillText(t, 256, y0 + i * 60));
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const g = new THREE.Group();
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 1.6, 6), new THREE.MeshLambertMaterial({ color: 0x4a3426 })); post.position.y = 0.8; g.add(post);
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.0), new THREE.MeshBasicMaterial({ map: tex, color: 0xe6e6e6 })); board.position.set(0, 1.55, 0.09); g.add(board);
+  return g;
+}
+async function recorrido(n) {
+  const R = cfg.recorrido || {};
+  const nombres = R.nombres || ['Camino de las luciérnagas', 'Bosque de los hongos', 'Hacia el claro del pastel'];
+  const frases = (R.letreros || [
+    ['Sigue las luces: el bosque te conoce', 'Cada paso suma una sonrisa'],
+    ['Los hongos brillan para darte la bienvenida', 'Lo bueno llega caminando despacio'],
+    ['Ya huele a pastel...', 'El claro está al final del sendero']
+  ])[n - 1] || [];
+  const dur = RAPIDO ? 8 : (cfg.retos.segundosRecorrido || 26), vel = 1.9, z0 = 4, z1 = z0 - vel * dur;
+  const px = (z) => -Math.sin(z * 0.3) * 0.2;
+  const grupo = new THREE.Group(), orbes = [], tex = texBrillo();
+  for (let z = z0 - 5; z > z1 + 3; z -= 3.0) {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, color: Math.random() < 0.7 ? 0xffd27a : 0x7ff6ff, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+    s.scale.setScalar(0.5); const o = { s, z, x: px(z) + (Math.random() * 3.6 - 1.6), y: 0.55 + Math.random() * 1.0, f: Math.random() * 6, ok: false };
+    s.position.set(o.x, o.y, z); grupo.add(s); orbes.push(o);
+  }
+  frases.forEach((t, i) => { const g = crearLetrero(t), z = z0 - (i + 1) * (vel * dur) / (frases.length + 1), lado = i % 2 ? 1 : -1; g.position.set(px(z) - 1.9, 0, z); g.rotation.y = Math.PI / 2 - 0.25; grupo.add(g); });
+  await transicion(`Recorrido · ${nombres[n - 1] || ''}`, () => {
+    escena.add(grupo); progreso(n); mostrar($('#hud')); cam.orbita = false; camara.fov = 66; camara.updateProjectionMatrix();
+    pastel.grupo.visible = false; tocon.visible = false; if (velas) velas.grupo.visible = false;
+    erizo.visible = true; enrollar(false); erizo.scale.setScalar(1); erizo.userData.gorro.visible = false; erizo.position.set(px(z0), 0, z0); erizo.rotation.set(0, Math.PI - 0.35, 0);
+    enfocar(V(px(z0) + 3.6, 1.15, z0 + 0.5), V(px(z0), 0.5, z0 - 0.5), true, 5);
+    hud('Recorrido', '✨ 0');
+  });
+  toast('Toca las luces que flotan por el camino', 2600);
+  return new Promise((resolve) => {
+    let z = z0, rec = 0, salto = 0, parar = 0;
+    fase = {
+      update(dt, t) {
+        const v = vel * (1 - suave(clamp(parar, 0, 1)));
+        if (z <= z1 + 6) parar = Math.min(1, (z1 + 6 - z) / 6 + 0.001 + parar * 0);
+        z -= v * dt; salto = Math.max(0, salto - dt * 2.2);
+        const sal = Math.sin(salto * Math.PI) * 0.45;
+        erizo.position.set(px(z), Math.abs(Math.sin(t * 9)) * 0.045 * (v / vel) + sal, z);
+        erizo.rotation.set(0, Math.PI - 0.35, Math.sin(t * 9) * 0.05 * (v / vel));
+        enfocar(V(px(z) + 3.6, 1.15, z + 0.5), V(px(z), 0.5, z - 0.5), false, 5);
+        mundo.calida.position.set(px(z) + 0.4, 2.2, z - 0.4);
+        for (const o of orbes) if (!o.ok) o.s.position.y = o.y + Math.sin(t * 1.8 + o.f) * 0.12;
+        if (z <= z1 + 0.3) terminar();
+      },
+      abajo(x, y) {
+        let mejor = null, md = 80;
+        for (const o of orbes) if (!o.ok) { const p = pantalla(o.s); const d = Math.hypot(p.x - x, p.y - y); if (d < md) { md = d; mejor = o; } }
+        if (mejor) { mejor.ok = true; mejor.s.visible = false; rec++; audio.luz(); chispas.emitir(mejor.s.position, 18, [0xffd27a, 0x7ff6ff, 0xffffff], 1.6); hud(null, `✨ ${rec}`); return; }
+        const pe = pantalla(erizo, 0.35);
+        if (Math.hypot(pe.x - x, pe.y - y) < 90 && salto <= 0) { salto = 1; audio.asoma(); chispas.emitir(erizo.position.clone().add(V(0, 0.6, 0)), 10, 0xff8fb1, 1.2); }
+      }
+    };
+    async function terminar() {
+      fase = null; audio.chime(); camara.fov = 55; camara.updateProjectionMatrix();
+      chispas.emitir(erizo.position.clone().add(V(0, 0.7, 0)), 50, [0xffd27a, 0x7ff6ff, 0xff8fb1], 2.4);
+      erizo.rotation.set(0, 0, 0); erizo.lookAt(cam.p.x, 0, cam.p.z);
+      toast(rec ? `Recogiste ${rec} ${rec === 1 ? 'luz' : 'luces'}` : 'Seguimos el camino', 1600); await espera(1700);
+      escena.remove(grupo); resolve();
     }
   });
 }
@@ -234,6 +309,7 @@ async function fase2() {
         if (ci < cps.length && z < cps[ci]) { cp = cps[ci]; ci++; toast('Farol alcanzado: punto de control'); audio.chime(); }
         for (const l of luces) if (!l.ok && Math.abs(l.z - z) < 0.5 && Math.abs(l.x - x) < 0.6) { l.ok = true; l.s.visible = false; recog++; audio.luz(); chispas.emitir(l.s.position, 14, 0xffd27a, 1.5); hud(null, `✨ ${recog}`); }
         erizo.position.set(x, inv > 0 ? Math.abs(Math.sin(inv * 12)) * 0.15 : 0, z);
+        mundo.calida.position.set(x, 2.4, z - 1.8);
         enfocar(V(x * 0.45, 2.9, z + 6.2), V(x * 0.6, 0.3, z - 5), false, 6);
         if (z <= z1) terminar();
       }
@@ -258,7 +334,7 @@ async function fase3() {
   const E = 0.72; // escala del pastel
   let lim = 1;
   const preparar = () => {
-    progreso(2); mostrar($('#hud')); cam.orbita = false; pastel.grupo.visible = true; pastel.grupo.scale.setScalar(E); pastel.grupo.position.set(0, 0.42, 0.4); pastel.mostrar(0);
+    progreso(2); mostrar($('#hud')); cam.orbita = false; mundo.calida.position.set(0, 2.4, -2.5); pastel.grupo.visible = true; pastel.grupo.scale.setScalar(E); pastel.grupo.position.set(0, 0.42, 0.4); pastel.mostrar(0);
     if (velas) velas.grupo.visible = false;
     tocon.visible = false;
     enfocar(V(0, 2.5, 7.4), V(0, 2.25, 0), true);
@@ -474,8 +550,9 @@ $('#btn-comenzar').onclick = async () => {
   mostrar($('#intro'), false); mostrar($('#btn-sonido'));
   const desde = clamp(parseInt(Q.get('fase') || '1', 10) || 1, 1, 4);
   if (desde <= 1) { await fase1(); await desbloquear(0); }
-  if (desde <= 2) { await fase2(); await desbloquear(1); }
-  if (desde <= 3) { await fase3(); await desbloquear(2); }
+  if (desde <= 2) { if (desde < 2) await recorrido(1); await fase2(); await desbloquear(1); }
+  if (desde <= 3) { if (desde < 3) await recorrido(2); await fase3(); await desbloquear(2); }
+  if (desde < 4) await recorrido(3);
   await fase4();
   mostrarCarta();
 };
