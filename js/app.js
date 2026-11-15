@@ -587,7 +587,7 @@ async function descargarCarta() {
   x.textAlign = 'left'; x.fillStyle = '#fff4dc'; let y = y0;
   lineas.forEach((ls) => { ls.forEach((l) => { x.fillText(l, (W - maxW) / 2, y); y += fs * 1.15; }); y += fs * 0.5; });
   x.textAlign = 'right'; x.fillStyle = '#ffd27a'; x.font = `700 ${Math.round(fs * 1.25)}px Caveat, cursive`; x.fillText(`Con cariño, ${cfg.firma}`, W - 100, Math.min(y + 40, H - 120));
-  x.textAlign = 'center'; x.fillStyle = 'rgba(169,198,204,0.7)'; x.font = '600 26px Nunito, sans-serif'; x.fillText('🦔 El erizo de ' + cfg.nombre, W / 2, H - 50);
+  x.textAlign = 'center'; x.fillStyle = 'rgba(169,198,204,0.7)'; x.font = '600 26px Nunito, sans-serif'; x.fillText('🦔 El erizo cumpleañero', W / 2, H - 50);
   c.toBlob((b) => {
     const url = URL.createObjectURL(b), a = document.createElement('a');
     a.href = url; a.download = `feliz-cumpleanos-${cfg.nombre.toLowerCase()}.png`; document.body.appendChild(a); a.click(); a.remove();
@@ -599,7 +599,7 @@ $('#carta-repetir').onclick = () => location.reload();
 $('#carta-ver').onclick = () => { mostrar($('#carta'), false); toast('Recarga la página para jugar otra vez', 2600); };
 
 // ───────── Inicio ─────────
-$('#intro-titulo').textContent = `El erizo de ${cfg.nombre}`;
+$('#intro-titulo').textContent = 'El erizo cumpleañero';
 $('#intro-bajada').innerHTML = `Es la noche antes de tu cumpleaños. Tu erizo se acurrucó en su camita… y empezó a soñar. En el sueño, tu pastel desapareció en el bosque. <b>Supera los 4 retos</b> y desbloquea los recuerdos en el camino.`;
 escenaCama(true); respirar(); cam.orbita = false;
 $('#btn-sonido').onclick = () => { audio.setMudo(!audio.mudo); $('#btn-sonido').textContent = audio.mudo ? '🔇' : '🔊'; };

@@ -1,5 +1,5 @@
 /*
-  CONFIGURACIÓN · El erizo de Ana
+  CONFIGURACIÓN · El erizo cumpleañero
   ───────────────────────────────
   Cambia los textos entre comillas y guarda. No borres las comas.
 */
