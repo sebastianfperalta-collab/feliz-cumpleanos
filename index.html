@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#071522">
+  <title>El erizo de Ana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="config.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "./lib/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div id="vr"></div>
+
+  <!-- Inicio -->
+  <section id="intro" class="capa">
+    <div class="caja intro-caja">
+      <p class="sobre">Un regalo de cumpleaños</p>
+      <h1 id="intro-titulo">El erizo de Ana</h1>
+      <p class="bajada" id="intro-bajada"></p>
+      <ol class="pasos">
+        <li><span>1</span><div><b>El bosque</b><small>atrapa al erizo antes de que se esconda</small></div></li>
+        <li><span>2</span><div><b>La bolita</b><small>rueda hasta la meta inclinando el celular</small></div></li>
+        <li><span>3</span><div><b>La lluvia de golosinas</b><small>atrápalas y arma el pastel</small></div></li>
+        <li><span>4</span><div><b>Las velas</b><small>sopla para apagarlas</small></div></li>
+      </ol>
+      <button id="btn-comenzar" class="btn primario">Comenzar</button>
+      <p class="nota">Usa el celular en vertical · Mejor con sonido</p>
+    </div>
+  </section>
+
+  <!-- HUD -->
+  <header id="hud" class="oculto">
+    <div class="progreso"><i></i><i></i><i></i><i></i></div>
+    <div class="hud-fila"><span id="hud-etapa"></span><span id="hud-info"></span></div>
+  </header>
+  <div id="combo" class="oculto"></div>
+  <button id="btn-sonido" class="oculto" aria-label="Sonido">🔊</button>
+  <div id="toast" class="oculto"></div>
+  <div id="destello"></div>
+
+  <!-- Medidor de soplido -->
+  <div id="soplido" class="oculto">
+    <div class="medidor"><div class="zona"></div><i id="soplido-barra"></i></div>
+    <p id="soplido-txt">Sopla suave y constante</p>
+    <button id="btn-soplar" class="btn secundario oculto">Mantén para soplar</button>
+  </div>
+
+  <!-- Tarjeta -->
+  <section id="tarjeta" class="capa oculto">
+    <div class="caja">
+      <p class="sobre" id="tarjeta-sobre"></p>
+      <h2 id="tarjeta-titulo"></h2>
+      <div id="tarjeta-texto"></div>
+      <div id="tarjeta-botones" class="botones"></div>
+    </div>
+  </section>
+
+  <!-- Foto desbloqueada -->
+  <section id="foto" class="capa oculto">
+    <div class="foto-caja">
+      <p class="sobre" id="foto-sobre"></p>
+      <div class="polaroid"><img id="foto-img" alt=""><p id="foto-texto"></p></div>
+      <button id="foto-btn" class="btn primario">Continuar</button>
+    </div>
+  </section>
+
+  <div id="transicion" class="oculto"><p id="transicion-texto"></p></div>
+
+  <!-- Carta final -->
+  <section id="carta" class="capa oculto">
+    <div class="carta-caja">
+      <p class="sobre">32 velas apagadas</p>
+      <h2 id="carta-titulo"></h2>
+      <div class="carta-fotos" id="carta-fotos"></div>
+      <div class="carta-texto" id="carta-texto"></div>
+      <p class="carta-firma" id="carta-firma"></p>
+      <div class="botones">
+        <button id="carta-descargar" class="btn primario">Descargar carta</button>
+        <button id="carta-repetir" class="btn secundario">Jugar otra vez</button>
+        <button id="carta-ver" class="btn texto">Ver el bosque</button>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
