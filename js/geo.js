@@ -122,3 +122,16 @@ export function casco(L, T, o = {}) {
   }
   return L;
 }
+
+// Material Lambert con luz de contorno (cálida en maderas, cian en hojas) para dar aire de ilustración
+export function matRim(k = 0.6, fijo = null) {
+  const m = new THREE.MeshLambertMaterial({ vertexColors: true });
+  const col = fijo ? `vec3(${fijo.join(',')})` : `(vColor.r > vColor.g * 1.05 ? vec3(1.0, 0.6, 0.28) : vec3(0.3, 0.85, 0.95))`;
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <opaque_fragment>', `
+      float rimF = pow(1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0), 2.6);
+      outgoingLight += ${col} * rimF * ${k.toFixed(2)} * (0.25 + diffuseColor.rgb);
+      #include <opaque_fragment>`);
+  };
+  return m;
+}

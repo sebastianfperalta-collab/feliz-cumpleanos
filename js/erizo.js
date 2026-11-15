@@ -1,14 +1,15 @@
 // Modelos: erizo pigmeo (normal y enrollado), gorro de fiesta, pastel por capas, velas, golosinas y obstáculos.
 import * as THREE from 'three';
-import { Lote, M4 } from './geo.js';
+import { Lote, M4, matRim } from './geo.js';
 import { arbusto } from './mundo.js';
 
 const lam = () => new THREE.MeshLambertMaterial({ vertexColors: true });
-const CREMA = 0xf3e4cc, CREMA2 = 0xfaf0e0, CAFE = 0x5a3a26, CAFE2 = 0x744c32, ROSA = 0xf2b4a6, NEGRO = 0x1b1411, PUNTA = 0xf3e6cf;
+const CREMA = 0xf0d7b0, CREMA2 = 0xf8e6c8, CAFE = 0x5a3a26, CAFE2 = 0x744c32, ROSA = 0xf2b4a6, NEGRO = 0x1b1411, PUNTA = 0xeed9b4;
 const UP = new THREE.Vector3(0, 1, 0);
 
-// púas: cono oscuro con punta clara
-function puas(L, radios, centro, filtro, n, largo, grosor, atras = 0.55) {
+// púas: cono oscuro con punta clara (tres tonos, como un erizo pigmeo)
+const TONOS = [0x4a2e1f, 0x6b4630, 0x4a2e1f, 0x855a3a];
+function puas(L, radios, centro, filtro, n, largo, grosor, atras = 0.55, tonos = TONOS, punta = PUNTA) {
   const ga = Math.PI * (3 - Math.sqrt(5)), d = new THREE.Vector3(), eje = new THREE.Vector3(), q = new THREE.Quaternion();
   for (let i = 0; i < n; i++) {
     const y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = ga * i;
@@ -16,41 +17,56 @@ function puas(L, radios, centro, filtro, n, largo, grosor, atras = 0.55) {
     if (!filtro(d)) continue;
     eje.set(d.x, d.y + 0.12 * atras, d.z - atras).normalize();
     q.setFromUnitVectors(UP, eje);
-    const lg = largo * (0.85 + ((i * 7919) % 100) / 100 * 0.3);
+    const lg = largo * (0.8 + ((i * 7919) % 100) / 100 * 0.4);
     const base = new THREE.Vector3(d.x * radios[0], d.y * radios[1], d.z * radios[2]).add(centro);
     const s1 = base.clone().addScaledVector(eje, lg * 0.3);
-    L.add(new THREE.ConeGeometry(grosor, lg, 5), i % 3 ? CAFE : CAFE2, null, new THREE.Matrix4().compose(s1, q, new THREE.Vector3(1, 1, 1)), {});
+    L.add(new THREE.ConeGeometry(grosor, lg, 5), tonos[i % tonos.length], null, new THREE.Matrix4().compose(s1, q, new THREE.Vector3(1, 1, 1)), {});
+    if (punta === null) continue;
     const s2 = base.clone().addScaledVector(eje, lg * 0.3 + lg * 0.3);
-    L.add(new THREE.ConeGeometry(grosor * 0.46, lg * 0.4, 5), PUNTA, null, new THREE.Matrix4().compose(s2, q, new THREE.Vector3(1, 1, 1)), {});
+    L.add(new THREE.ConeGeometry(grosor * 0.46, lg * 0.4, 5), punta, null, new THREE.Matrix4().compose(s2, q, new THREE.Vector3(1, 1, 1)), {});
   }
 }
+const matErizo = () => { const m = matRim(0.45, [1.0, 0.82, 0.6]); m.emissive = new THREE.Color(0x2a1a0c); return m; };
 
 export function crearErizo() {
   const g = new THREE.Group();
-  // cuerpo de pie (mira hacia +z)
+  // cuerpo de pie (mira hacia +z): redondo y esponjoso
   const L = new Lote();
-  const C = new THREE.Vector3(0, 0.36, -0.02), R = [0.42, 0.32, 0.5];
-  L.add(new THREE.SphereGeometry(1, 22, 16), CREMA, null, M4(C.x, C.y, C.z, 0, 0, 0, R[0], R[1], R[2]), { suave: true, g: [0.78, 1.05] });
-  L.add(new THREE.SphereGeometry(1, 18, 12), CAFE, null, M4(0, 0.42, -0.1, 0, 0, 0, 0.43, 0.34, 0.47), { suave: true });
-  puas(L, [0.43, 0.34, 0.47], new THREE.Vector3(0, 0.42, -0.1), (d) => d.z < 0.42 && d.y > -0.25, 260, 0.24, 0.05);
-  L.add(new THREE.ConeGeometry(0.17, 0.32, 14), CREMA2, null, M4(0, 0.3, 0.56, Math.PI / 2, 0, 0), { suave: true });
-  L.add(new THREE.SphereGeometry(0.058, 10, 8), NEGRO, null, M4(0, 0.3, 0.73), { suave: true });
+  const C = new THREE.Vector3(0, 0.37, -0.02), R = [0.41, 0.35, 0.47];
+  L.add(new THREE.SphereGeometry(1, 26, 18), CREMA, null, M4(C.x, C.y, C.z, 0, 0, 0, R[0], R[1], R[2]), { suave: true, g: [0.8, 1.06] });
+  const CP = new THREE.Vector3(0, 0.42, -0.09), RP = [0.43, 0.37, 0.47];
+  L.add(new THREE.SphereGeometry(1, 20, 14), 0x4a2e1f, null, M4(CP.x, CP.y, CP.z, 0, 0, 0, RP[0], RP[1], RP[2]), { suave: true });
+  puas(L, RP, CP, (d) => d.z < 0.4 && d.y > -0.32, 640, 0.18, 0.038, 0.38);
+  // pelusa crema en el borde entre la cara y las púas, y en la panza
+  puas(L, [0.42, 0.36, 0.47], CP, (d) => d.z >= 0.4 && d.z < 0.62 && d.y > -0.2, 700, 0.085, 0.03, -0.35, [CREMA2, CREMA], null);
+  // cabeza y hocico corto
+  L.add(new THREE.SphereGeometry(1, 18, 14), CREMA2, null, M4(0, 0.34, 0.36, 0, 0, 0, 0.25, 0.22, 0.24), { suave: true, g: [0.86, 1.05] });
+  L.add(new THREE.ConeGeometry(0.15, 0.26, 16), CREMA2, null, M4(0, 0.3, 0.58, Math.PI / 2, 0, 0), { suave: true });
+  L.add(new THREE.SphereGeometry(1, 12, 10), 0x2a1a15, null, M4(0, 0.305, 0.71, 0, 0, 0, 0.052, 0.045, 0.045), { suave: true });
+  L.add(new THREE.SphereGeometry(0.014, 6, 4), 0xffffff, null, M4(0.015, 0.325, 0.745), { suave: true, g: [1.2, 1.2] });
   for (const s of [-1, 1]) {
-    L.add(new THREE.SphereGeometry(0.062, 10, 8), NEGRO, null, M4(s * 0.15, 0.42, 0.42), { suave: true });
-    L.add(new THREE.SphereGeometry(0.02, 6, 4), 0xffffff, null, M4(s * 0.15 + 0.018, 0.445, 0.475), { suave: true, g: [1.3, 1.3] });
-    L.add(new THREE.SphereGeometry(1, 12, 8), ROSA, null, M4(s * 0.26, 0.6, 0.2, 0, 0, -s * 0.35, 0.085, 0.095, 0.035), { suave: true });
-    L.add(new THREE.SphereGeometry(1, 10, 6), 0xf6a39c, null, M4(s * 0.25, 0.31, 0.38, 0, 0, 0, 0.07, 0.04, 0.03), { suave: true });
-    for (const fz of [0.24, -0.24]) L.add(new THREE.SphereGeometry(1, 8, 6), ROSA, null, M4(s * 0.2, 0.05, fz, 0, 0, 0, 0.08, 0.05, 0.1), { suave: true });
+    L.add(new THREE.SphereGeometry(0.056, 12, 10), NEGRO, null, M4(s * 0.155, 0.43, 0.505), { suave: true });
+    L.add(new THREE.SphereGeometry(0.022, 6, 4), 0xffffff, null, M4(s * 0.155 + 0.018, 0.454, 0.55), { suave: true, g: [1.3, 1.3] });
+    L.add(new THREE.SphereGeometry(0.01, 5, 4), 0xffffff, null, M4(s * 0.155 - 0.018, 0.418, 0.552), { suave: true, g: [1.3, 1.3] });
+    // orejas: borde crema-café y centro rosado
+    L.add(new THREE.SphereGeometry(1, 14, 10), 0xe0b494, null, M4(s * 0.255, 0.62, 0.22, 0, s * 0.35, -s * 0.4, 0.105, 0.115, 0.04), { suave: true });
+    L.add(new THREE.SphereGeometry(1, 12, 8), ROSA, null, M4(s * 0.252, 0.615, 0.25, 0, s * 0.35, -s * 0.4, 0.07, 0.08, 0.025), { suave: true });
+    L.add(new THREE.SphereGeometry(1, 10, 6), 0xf6a39c, null, M4(s * 0.2, 0.31, 0.52, 0, s * 0.5, 0, 0.055, 0.035, 0.025), { suave: true });
+    // patitas con deditos
+    for (const fz of [0.26, -0.22]) {
+      L.add(new THREE.SphereGeometry(1, 10, 8), 0xeeb7a4, null, M4(s * 0.19, 0.045, fz, 0, 0, 0, 0.07, 0.045, 0.095), { suave: true });
+      for (const dx of [-0.04, 0, 0.04]) L.add(new THREE.SphereGeometry(0.022, 6, 4), 0xf6c9b8, null, M4(s * 0.19 + dx, 0.03, fz + 0.085), { suave: true });
+    }
   }
-  const cuerpo = L.malla(lam()); g.add(cuerpo);
+  const cuerpo = L.malla(matErizo()); g.add(cuerpo);
 
   // enrollado en bolita
   const B = new Lote();
-  B.add(new THREE.SphereGeometry(0.33, 18, 14), CAFE, null, null, { suave: true });
-  puas(B, [0.33, 0.33, 0.33], new THREE.Vector3(), (d) => !(d.z > 0.55 && d.y < -0.2), 300, 0.22, 0.05, 0.0);
+  B.add(new THREE.SphereGeometry(0.33, 18, 14), 0x4a2e1f, null, null, { suave: true });
+  puas(B, [0.33, 0.33, 0.33], new THREE.Vector3(), (d) => !(d.z > 0.55 && d.y < -0.2), 420, 0.19, 0.042, 0.0);
   B.add(new THREE.SphereGeometry(0.15, 10, 8), CREMA2, null, M4(0, -0.17, 0.27), { suave: true });
   B.add(new THREE.SphereGeometry(0.045, 8, 6), NEGRO, null, M4(0, -0.2, 0.41), { suave: true });
-  const bola = B.malla(lam()); bola.position.y = 0.4; bola.visible = false; g.add(bola);
+  const bola = B.malla(matErizo()); bola.position.y = 0.4; bola.visible = false; g.add(bola);
 
   // gorro de fiesta
   const H = new Lote();

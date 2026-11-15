@@ -575,7 +575,7 @@ function bucle() {
   pastel.animar(dt); chispas.update(dt); mundo.animar(t, camara);
   // calidad adaptativa
   cal.n++; cal.s += dt;
-  if (cal.s > 2.5) { const fps = cal.n / cal.s; cal.n = 0; cal.s = 0; if (fps < 26 && cal.nivel < 2) { cal.nivel++; if (cal.nivel === 1) { PR = Math.max(1, PR * 0.7); } else { PR = 1; mundo.halos.visible = false; } renderer.setPixelRatio(PR); mundo.pr(PR); } }
+  if (cal.s > 2.5) { const fps = cal.n / cal.s; cal.n = 0; cal.s = 0; if (fps < 26 && cal.nivel < 2) { cal.nivel++; if (cal.nivel === 1) { PR = Math.max(1, PR * 0.7); } else { PR = 1; mundo.halos.visible = false; mundo.brumas.visible = false; } renderer.setPixelRatio(PR); mundo.pr(PR); } }
   renderer.render(escena, camara);
   requestAnimationFrame(bucle);
 }

@@ -80,3 +80,6 @@ h2 { font-size: 30px; color: var(--oro); }
 .carta-texto { text-align: left; font-family: 'Caveat', cursive; font-size: 24px; line-height: 1.25; color: #fff4dc; }
 .carta-texto p { margin: 0 0 12px; }
 .carta-firma { text-align: right; font-family: 'Caveat', cursive; font-size: 30px; color: var(--oro); margin: 4px 0 18px; }
+
+/* viñeta suave para dar profundidad */
+#vr::after { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 52%, rgba(2,10,22,0.5) 100%); }
