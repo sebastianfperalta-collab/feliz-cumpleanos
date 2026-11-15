@@ -4,11 +4,11 @@ import { Lote, M4, matRim } from './geo.js';
 import { arbusto } from './mundo.js';
 
 const lam = () => new THREE.MeshLambertMaterial({ vertexColors: true });
-const CREMA = 0xf0d7b0, CREMA2 = 0xf8e6c8, CAFE = 0x5a3a26, CAFE2 = 0x744c32, ROSA = 0xf2b4a6, NEGRO = 0x1b1411, PUNTA = 0xeed9b4;
+const CREMA = 0xe8cc9e, CREMA2 = 0xf2dcb4, CAFE = 0x5a3a26, CAFE2 = 0x744c32, ROSA = 0xf2b4a6, NEGRO = 0x1b1411, PUNTA = 0xc2925c;
 const UP = new THREE.Vector3(0, 1, 0);
 
 // púas: cono oscuro con punta clara (tres tonos, como un erizo pigmeo)
-const TONOS = [0x4a2e1f, 0x6b4630, 0x4a2e1f, 0x855a3a];
+const TONOS = [0x2e1b11, 0x452a1a, 0x382215, 0x553622];
 function puas(L, radios, centro, filtro, n, largo, grosor, atras = 0.55, tonos = TONOS, punta = PUNTA) {
   const ga = Math.PI * (3 - Math.sqrt(5)), d = new THREE.Vector3(), eje = new THREE.Vector3(), q = new THREE.Quaternion();
   for (let i = 0; i < n; i++) {
@@ -22,50 +22,44 @@ function puas(L, radios, centro, filtro, n, largo, grosor, atras = 0.55, tonos =
     const s1 = base.clone().addScaledVector(eje, lg * 0.3);
     L.add(new THREE.ConeGeometry(grosor, lg, 5), tonos[i % tonos.length], null, new THREE.Matrix4().compose(s1, q, new THREE.Vector3(1, 1, 1)), {});
     if (punta === null) continue;
-    const s2 = base.clone().addScaledVector(eje, lg * 0.3 + lg * 0.3);
-    L.add(new THREE.ConeGeometry(grosor * 0.46, lg * 0.4, 5), punta, null, new THREE.Matrix4().compose(s2, q, new THREE.Vector3(1, 1, 1)), {});
+    const s2 = base.clone().addScaledVector(eje, lg * 0.3 + lg * 0.36);
+    L.add(new THREE.ConeGeometry(grosor * 0.34, lg * 0.28, 5), punta, null, new THREE.Matrix4().compose(s2, q, new THREE.Vector3(1, 1, 1)), {});
   }
 }
 const matErizo = () => { const m = matRim(0.45, [1.0, 0.82, 0.6]); m.emissive = new THREE.Color(0x2a1a0c); return m; };
 
 export function crearErizo() {
   const g = new THREE.Group();
-  // cuerpo de pie (mira hacia +z): redondo y esponjoso
+  const CANELA = 0xcaa078, CANELA2 = 0xa67a55;
+  // de pie (mira hacia +z): cuerpo redondo, cabeza grande y capucha de púas
   const L = new Lote();
-  const C = new THREE.Vector3(0, 0.37, -0.02), R = [0.41, 0.35, 0.47];
-  L.add(new THREE.SphereGeometry(1, 26, 18), CREMA, null, M4(C.x, C.y, C.z, 0, 0, 0, R[0], R[1], R[2]), { suave: true, g: [0.8, 1.06] });
-  const CP = new THREE.Vector3(0, 0.42, -0.09), RP = [0.43, 0.37, 0.47];
-  L.add(new THREE.SphereGeometry(1, 20, 14), 0x4a2e1f, null, M4(CP.x, CP.y, CP.z, 0, 0, 0, RP[0], RP[1], RP[2]), { suave: true });
-  puas(L, RP, CP, (d) => d.z < 0.4 && d.y > -0.32, 640, 0.18, 0.038, 0.38);
-  // pelusa crema en el borde entre la cara y las púas, y en la panza
-  puas(L, [0.42, 0.36, 0.47], CP, (d) => d.z >= 0.4 && d.z < 0.62 && d.y > -0.2, 700, 0.085, 0.03, -0.35, [CREMA2, CREMA], null);
-  // cabeza y hocico corto
-  L.add(new THREE.SphereGeometry(1, 18, 14), CREMA2, null, M4(0, 0.34, 0.36, 0, 0, 0, 0.25, 0.22, 0.24), { suave: true, g: [0.86, 1.05] });
-  L.add(new THREE.ConeGeometry(0.15, 0.26, 16), CREMA2, null, M4(0, 0.3, 0.58, Math.PI / 2, 0, 0), { suave: true });
-  L.add(new THREE.SphereGeometry(1, 12, 10), 0x2a1a15, null, M4(0, 0.305, 0.71, 0, 0, 0, 0.052, 0.045, 0.045), { suave: true });
-  L.add(new THREE.SphereGeometry(0.014, 6, 4), 0xffffff, null, M4(0.015, 0.325, 0.745), { suave: true, g: [1.2, 1.2] });
+  L.add(new THREE.SphereGeometry(1, 26, 18), CREMA, null, M4(0, 0.38, -0.06, 0, 0, 0, 0.4, 0.36, 0.44), { suave: true, g: [0.82, 1.05] });
+  L.add(new THREE.SphereGeometry(1, 26, 18), CREMA2, null, M4(0, 0.4, 0.3, 0, 0, 0, 0.3, 0.27, 0.28), { suave: true, g: [0.88, 1.05] });
+  const CP = new THREE.Vector3(0, 0.45, -0.06), RP = [0.45, 0.4, 0.5];
+  const capucha = (d) => d.y > -0.35 && (d.z < 0.42 || (d.y > 0.4 && d.z < 0.72));
+  L.add(new THREE.SphereGeometry(1, 20, 14), 0x3e2618, null, M4(CP.x, CP.y, CP.z - 0.1, 0, 0, 0, RP[0] * 0.97, RP[1] * 0.97, RP[2] * 0.84), { suave: true });
+  puas(L, RP, CP, capucha, 1100, 0.15, 0.05, 0.5);
+  // hocico, nariz y sonrisa
+  L.add(new THREE.ConeGeometry(0.11, 0.24, 16), CREMA2, null, M4(0, 0.385, 0.6, Math.PI / 2 - 0.12, 0, 0), { suave: true });
+  L.add(new THREE.SphereGeometry(1, 12, 10), NEGRO, null, M4(0, 0.402, 0.72, 0, 0, 0, 0.05, 0.043, 0.043), { suave: true });
+  L.add(new THREE.SphereGeometry(0.013, 6, 4), 0xffffff, null, M4(0.014, 0.42, 0.752), { suave: true, g: [1.2, 1.2] });
+  L.add(new THREE.TorusGeometry(0.05, 0.008, 4, 10, Math.PI), 0x6e4a2e, null, M4(0, 0.262, 0.528, 0.35, 0, Math.PI), {});
   for (const s of [-1, 1]) {
-    L.add(new THREE.SphereGeometry(0.056, 12, 10), NEGRO, null, M4(s * 0.155, 0.43, 0.505), { suave: true });
-    L.add(new THREE.SphereGeometry(0.022, 6, 4), 0xffffff, null, M4(s * 0.155 + 0.018, 0.454, 0.55), { suave: true, g: [1.3, 1.3] });
-    L.add(new THREE.SphereGeometry(0.01, 5, 4), 0xffffff, null, M4(s * 0.155 - 0.018, 0.418, 0.552), { suave: true, g: [1.3, 1.3] });
-    // orejas: borde crema-café y centro rosado
-    L.add(new THREE.SphereGeometry(1, 14, 10), 0xe0b494, null, M4(s * 0.255, 0.62, 0.22, 0, s * 0.35, -s * 0.4, 0.105, 0.115, 0.04), { suave: true });
-    L.add(new THREE.SphereGeometry(1, 12, 8), ROSA, null, M4(s * 0.252, 0.615, 0.25, 0, s * 0.35, -s * 0.4, 0.07, 0.08, 0.025), { suave: true });
-    L.add(new THREE.SphereGeometry(1, 10, 6), 0xf6a39c, null, M4(s * 0.2, 0.31, 0.52, 0, s * 0.5, 0, 0.055, 0.035, 0.025), { suave: true });
-    // patitas con deditos
-    for (const fz of [0.26, -0.22]) {
-      L.add(new THREE.SphereGeometry(1, 10, 8), 0xeeb7a4, null, M4(s * 0.19, 0.045, fz, 0, 0, 0, 0.07, 0.045, 0.095), { suave: true });
-      for (const dx of [-0.04, 0, 0.04]) L.add(new THREE.SphereGeometry(0.022, 6, 4), 0xf6c9b8, null, M4(s * 0.19 + dx, 0.03, fz + 0.085), { suave: true });
-    }
+    L.add(new THREE.SphereGeometry(0.05, 12, 10), NEGRO, null, M4(s * 0.14, 0.445, 0.535), { suave: true });
+    L.add(new THREE.SphereGeometry(0.017, 6, 4), 0xffffff, null, M4(s * 0.14 + 0.014, 0.464, 0.572), { suave: true, g: [1.3, 1.3] });
+    L.add(new THREE.SphereGeometry(1, 10, 6), 0xf3a892, null, M4(s * 0.205, 0.35, 0.49, 0, s * 0.75, 0, 0.055, 0.038, 0.016), { suave: true });
+    // orejas redondas color canela
+    L.add(new THREE.SphereGeometry(1, 14, 10), CANELA, null, M4(s * 0.3, 0.6, 0.3, 0, s * 0.45, -s * 0.35, 0.1, 0.1, 0.04), { suave: true });
+    L.add(new THREE.SphereGeometry(1, 12, 8), CANELA2, null, M4(s * 0.305, 0.6, 0.325, 0, s * 0.45, -s * 0.35, 0.062, 0.062, 0.022), { suave: true });
+    // patitas
+    for (const fz of [0.2, -0.26]) L.add(new THREE.SphereGeometry(1, 12, 8), CANELA, null, M4(s * 0.2, 0.05, fz, 0, 0, 0, 0.075, 0.05, 0.1), { suave: true, g: [0.85, 1.05] });
   }
   const cuerpo = L.malla(matErizo()); g.add(cuerpo);
 
   // enrollado en bolita
   const B = new Lote();
-  B.add(new THREE.SphereGeometry(0.33, 18, 14), 0x4a2e1f, null, null, { suave: true });
-  puas(B, [0.33, 0.33, 0.33], new THREE.Vector3(), (d) => !(d.z > 0.55 && d.y < -0.2), 420, 0.19, 0.042, 0.0);
-  B.add(new THREE.SphereGeometry(0.15, 10, 8), CREMA2, null, M4(0, -0.17, 0.27), { suave: true });
-  B.add(new THREE.SphereGeometry(0.045, 8, 6), NEGRO, null, M4(0, -0.2, 0.41), { suave: true });
+  B.add(new THREE.SphereGeometry(0.33, 18, 14), 0x3e2618, null, null, { suave: true });
+  puas(B, [0.33, 0.33, 0.33], new THREE.Vector3(), () => true, 700, 0.15, 0.05, 0.0);
   const bola = B.malla(matErizo()); bola.position.y = 0.4; bola.visible = false; g.add(bola);
 
   // gorro de fiesta
@@ -73,7 +67,7 @@ export function crearErizo() {
   H.add(new THREE.ConeGeometry(0.13, 0.32, 16, 6), (x, y) => (Math.floor((y + 0.16) * 18) % 2 ? 0xff6f91 : 0xffd166), null, null, { suave: true });
   H.add(new THREE.SphereGeometry(0.05, 10, 8), 0xffffff, null, M4(0, 0.17, 0), { suave: true });
   H.add(new THREE.TorusGeometry(0.125, 0.018, 6, 18), 0x7ff6ff, null, M4(0, -0.15, 0, Math.PI / 2, 0, 0), {});
-  const gorro = H.malla(lam()); gorro.position.set(0.06, 0.74, 0.12); gorro.rotation.set(0.15, 0, -0.28); gorro.visible = false; g.add(gorro);
+  const gorro = H.malla(lam()); gorro.position.set(0.05, 0.93, 0.1); gorro.rotation.set(0.15, 0, -0.28); gorro.visible = false; g.add(gorro);
 
   g.userData = { cuerpo, bola, gorro };
   g.userData.enrollar = (si) => { cuerpo.visible = !si; bola.visible = si; gorro.visible = gorro.visible && !si; };
