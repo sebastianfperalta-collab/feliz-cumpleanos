@@ -30,10 +30,10 @@ window.DEMO_CONFIG = {
     largoSendero: 64,       // reto 2: metros que rueda la bolita
     golosinasMeta: 20,      // reto 3: golosinas para armar el pastel
     segundosGolosinas: 45,  // reto 3: tiempo disponible
-    segundosRecorrido: 26   // duración de cada recorrido por el bosque
+    segundosRecorrido: 14   // duración del recorrido por el bosque
   },
 
-  // Recorridos por el bosque entre retos (3). Cada uno lleva 2 letreros con frases tuyas.
+  // Recorrido por el bosque (uno, entre el reto 1 y el 2). Usa los 2 letreros de la primera línea.
   recorrido: {
     nombres: ["Camino de las luciérnagas", "Bosque de los hongos", "Hacia el claro del pastel"],
     letreros: [

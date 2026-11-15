@@ -24,7 +24,7 @@ Juego web de cumpleaños para el celular. Se juega en un bosque de noche con luc
 three.js 0.160 (MIT). Fuentes Fredoka, Nunito y Caveat (Google Fonts, OFL). Los sonidos se sintetizan en el navegador. "Cumpleaños feliz" es una melodía tradicional.
 
 ## Recorridos por el bosque
-Entre cada reto el erizo camina por el sendero con cámara lateral: toca las luces que flotan y lee los letreros.
+Entre el reto 1 y el 2 el erizo camina por el sendero (vista desde atrás): toca las luces que flotan y lee los letreros.
 En `config.js`: `retos.segundosRecorrido` y `recorrido.letreros` (2 frases por recorrido).
 
 ## El sueño
