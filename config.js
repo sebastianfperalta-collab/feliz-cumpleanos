@@ -11,18 +11,17 @@ window.DEMO_CONFIG = {
 
   // Fotos que se desbloquean al terminar los retos 1, 2 y 3 (carpeta img)
   fotos: [
-    { src: "img/ana1.jpg", texto: "Esa sonrisa ilumina más que todas las luces juntas." },
-    { src: "img/ana2.jpg", texto: "Entre flores, que es donde mejor te queda." },
+    { src: "img/ana1.jpg", texto: "Ana, feliz cumple!!! 🎂 Que este año tenga la misma luz de ese día, con esa sonrisa que contagia y mucha energía para todo lo que venga. Un abrazo grande 🥳" },
+    { src: "img/ana2.jpg", texto: "Ana, feliz cumple!!! 🌸 Te deseo un día lleno de risas, comida rica y gente linda, y un año que florezca con planes que te emocionen y momentos memorables. Un abrazo grande 🥳" },
     { src: "img/ana3.jpg", texto: "Paciencia, manos y mucho corazón." }
   ],
 
   // Carta final (cada línea es un párrafo). Puedes agregar un recuerdo que compartan.
   mensaje: [
-    "Ana:",
-    "Hoy cumples 32 años y quise regalarte algo distinto: un pedacito de bosque hecho a mano, con un erizo que te acompaña y unas velas que solo tú podías apagar.",
-    "Gracias por tu sonrisa, por tu forma de mirar el mundo con curiosidad y por hacer que los días sencillos se sientan especiales. Las personas como tú dejan luz por donde pasan, como esas luciérnagas que encontraste en el camino.",
-    "Te deseo un año lleno de calma, de proyectos que te ilusionen, de risas largas y de gente que te quiera bonito. Que cada reto que llegue lo superes como superaste estos: con paciencia y a tu manera.",
-    "Feliz cumpleaños. Que este nuevo año sea tan bonito como tú."
+    "Ana, feliz cumple!!! 🎉",
+    "Hoy te mereces un día lleno de risas, buena comida y gente que te quiere, de esos que uno recuerda con cariño mucho después.",
+    "Que este nuevo año te regale proyectos que te entusiasmen, buenos planes y razones de sobra para sonreír.",
+    "Un abrazo enorme y a disfrutarlo"
   ],
 
   // ── DIFICULTAD ──────────────────────────────────────
