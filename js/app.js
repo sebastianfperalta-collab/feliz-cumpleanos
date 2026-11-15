@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { crearMundo, SENDERO, rnd } from './mundo.js';
-import { crearErizo, crearPastel, crearVelas, crearGolosina, BUENAS, crearTronco, crearRoca, crearTocon, crearArbusto, crearFarol, texBrillo } from './erizo.js';
+import { crearCama, crearErizo, crearPastel, crearVelas, crearGolosina, BUENAS, crearTronco, crearRoca, crearTocon, crearArbusto, crearFarol, texBrillo } from './erizo.js';
 import { audio, iniciarAudio, contexto } from './audio.js';
 
 const cfg = window.DEMO_CONFIG;
@@ -29,6 +29,7 @@ const erizo = crearErizo(); escena.add(erizo);
 const enrollar = (si) => erizo.userData.enrollar(si);
 const pastel = crearPastel(); pastel.grupo.visible = false; escena.add(pastel.grupo);
 const tocon = crearTocon(); tocon.visible = false; escena.add(tocon);
+const cama = crearCama(); escena.add(cama);
 let velas = null;
 
 // cámara con suavizado
@@ -491,6 +492,56 @@ async function fase4() {
   });
 }
 
+// ───────── El sueño (inicio y despertar) ─────────
+const sueno = cfg.sueno || {};
+function escenaCama(dormido) {
+  cama.visible = true; tocon.visible = false; pastel.grupo.visible = false; if (velas) velas.grupo.visible = false;
+  erizo.visible = true; erizo.scale.setScalar(0.85); erizo.userData.gorro.visible = !dormido;
+  if (dormido) { enrollar(true); erizo.position.set(0.05, 0.55, -0.42); erizo.rotation.set(0.5, 0.35, 0); }
+  else { enrollar(false); erizo.position.set(0, 0.62, -0.25); erizo.rotation.set(0, 0.45, 0); }
+  mundo.calida.position.set(1.2, 2.0, 1.4);
+  enfocar(V(2.3, 2.3, 3.1), V(0, 0.55, -0.3), true, 3);
+}
+function respirar() {
+  const b = erizo.userData.bola;
+  fase = { update(dt, t) { const k = 1 + Math.sin(t * 1.6) * 0.035; b.scale.set(1 + (k - 1) * 0.6, k, 1 + (k - 1) * 0.6); } };
+}
+async function escribir(texto, msXLetra = 55) {
+  const el = $('#subtitulo'); el.textContent = ''; mostrar(el);
+  const letras = [...texto], ms = RAPIDO ? 8 : msXLetra, t0 = performance.now();
+  for (let n = 0; n < letras.length;) { await espera(25); n = Math.min(letras.length, Math.floor((performance.now() - t0) / ms)); el.textContent = letras.slice(0, n).join(''); }
+}
+async function viajeSueno(texto, cambio) {
+  const s = $('#sueno'); $('#sueno-texto').textContent = texto;
+  $('#vr').classList.add('difuso'); mostrar(s); void s.offsetWidth; s.classList.add('on');
+  await espera(1300); cambio?.(); await espera(RAPIDO ? 400 : 1800);
+  $('#vr').classList.remove('difuso'); s.classList.remove('on'); await espera(1200); mostrar(s, false);
+}
+async function dormirse() {
+  escenaCama(true); respirar(); cam.orbita = false;
+  enfocar(V(1.7, 1.75, 2.3), V(0, 0.62, -0.35), false, 0.6);
+  await espera(RAPIDO ? 300 : 1200); mostrar($('#zzz'));
+  await escribir(sueno.frase || 'Soy un pastelito horneado de canela...');
+  await espera(RAPIDO ? 600 : 2600);
+  mostrar($('#subtitulo'), false);
+  await viajeSueno('...y empezó a soñar', () => {
+    mostrar($('#zzz'), false); cama.visible = false; fase = null; erizo.userData.bola.scale.setScalar(1); erizo.scale.setScalar(1); erizo.rotation.set(0, 0, 0);
+  });
+}
+async function despertar() {
+  mostrar($('#hud'), false);
+  await viajeSueno('Despierta...', () => { escenaCama(true); respirar(); });
+  await espera(RAPIDO ? 300 : 900);
+  fase = null; erizo.userData.bola.scale.setScalar(1);
+  audio.chime(); escenaCama(false); erizo.position.y += 0.12;
+  chispas.emitir(erizo.position.clone().add(V(0, 0.5, 0)), 40, [0xffd27a, 0xff8fb1, 0x7ff6ff], 2);
+  setTimeout(() => (erizo.position.y -= 0.12), 220);
+  enfocar(V(1.6, 1.6, 2.2), V(0, 0.72, -0.3), false, 1);
+  await escribir(sueno.despertar || '¿Fue un sueño? ¡Feliz cumpleaños!', 45);
+  await espera(RAPIDO ? 600 : 3200);
+  mostrar($('#subtitulo'), false);
+}
+
 // ───────── Carta final ─────────
 function mostrarCarta() {
   progreso(4); mostrar($('#hud'), false);
@@ -540,20 +591,21 @@ $('#carta-ver').onclick = () => { mostrar($('#carta'), false); toast('Recarga la
 
 // ───────── Inicio ─────────
 $('#intro-titulo').textContent = `El erizo de ${cfg.nombre}`;
-$('#intro-bajada').innerHTML = `Es la noche de tu cumpleaños, ${esc(cfg.nombre)}, y tu pastel desapareció en el bosque. Tu erizo sabe dónde encontrarlo. <b>Supera los 4 retos</b> y desbloquea los recuerdos en el camino.`;
-erizo.position.set(0, 0, 1); erizo.lookAt(0, 0, 8);
-enfocar(V(0, 1.4, 4.6), V(0, 0.7, 0), true);
+$('#intro-bajada').innerHTML = `Es la noche antes de tu cumpleaños, ${esc(cfg.nombre)}. Tu erizo se acurrucó en su camita… y empezó a soñar. En el sueño, tu pastel desapareció en el bosque. <b>Supera los 4 retos</b> y desbloquea los recuerdos en el camino.`;
+escenaCama(true); respirar(); cam.orbita = false;
 $('#btn-sonido').onclick = () => { audio.setMudo(!audio.mudo); $('#btn-sonido').textContent = audio.mudo ? '🔇' : '🔊'; };
 
 $('#btn-comenzar').onclick = async () => {
   iniciarAudio(); audio.clic(); await pedirMovimiento();
   mostrar($('#intro'), false); mostrar($('#btn-sonido'));
   const desde = clamp(parseInt(Q.get('fase') || '1', 10) || 1, 1, 4);
+  if (desde <= 1) await dormirse(); else { cama.visible = false; fase = null; }
   if (desde <= 1) { await fase1(); await desbloquear(0); }
   if (desde <= 2) { if (desde < 2) await recorrido(1); await fase2(); await desbloquear(1); }
   if (desde <= 3) { if (desde < 3) await recorrido(2); await fase3(); await desbloquear(2); }
   if (desde < 4) await recorrido(3);
   await fase4();
+  await despertar();
   mostrarCarta();
 };
 

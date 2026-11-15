@@ -83,3 +83,20 @@ h2 { font-size: 30px; color: var(--oro); }
 
 /* viñeta suave para dar profundidad */
 #vr::after { content: ''; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 52%, rgba(2,10,22,0.5) 100%); }
+
+/* ── El sueño ── */
+#subtitulo { position: fixed; left: 50%; bottom: 17%; transform: translateX(-50%); width: 88%; z-index: 12; margin: 0; text-align: center;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 30px; line-height: 1.15; color: #ffe14d; letter-spacing: .5px;
+  -webkit-text-stroke: 1.5px #1c1407; paint-order: stroke fill; text-shadow: 0 3px 0 #1c1407, 0 0 18px rgba(0,0,0,.6); }
+#zzz { position: fixed; left: 50%; top: 30%; z-index: 11; pointer-events: none; }
+#zzz b { position: absolute; font-family: 'Fredoka'; font-weight: 700; color: #cfe6ff; text-shadow: 0 0 12px rgba(160,200,255,.8); opacity: 0; animation: zzz 3s infinite; }
+#zzz b:nth-child(1) { font-size: 20px; animation-delay: 0s; }
+#zzz b:nth-child(2) { font-size: 28px; animation-delay: 1s; }
+#zzz b:nth-child(3) { font-size: 38px; animation-delay: 2s; }
+@keyframes zzz { 0% { transform: translate(0, 0) rotate(-10deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(46px, -110px) rotate(12deg); opacity: 0; } }
+#sueno { position: fixed; inset: 0; z-index: 31; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0; transition: opacity 1.2s;
+  background: radial-gradient(circle at 50% 50%, rgba(255,240,255,.95) 0%, rgba(190,150,255,.92) 35%, rgba(60,40,120,.97) 100%); }
+#sueno.on { opacity: 1; }
+#sueno p { font-family: 'Caveat', cursive; font-weight: 700; font-size: 40px; color: #2b1a4f; text-align: center; padding: 24px; margin: 0; }
+#vr.difuso canvas { filter: blur(10px) saturate(1.4) hue-rotate(25deg); transition: filter 1.2s; }
+#vr canvas { transition: filter 1.2s; }

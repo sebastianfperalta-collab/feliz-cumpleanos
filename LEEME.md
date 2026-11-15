@@ -26,3 +26,6 @@ three.js 0.160 (MIT). Fuentes Fredoka, Nunito y Caveat (Google Fonts, OFL). Los 
 ## Recorridos por el bosque
 Entre cada reto el erizo camina por el sendero con cámara lateral: toca las luces que flotan y lee los letreros.
 En `config.js`: `retos.segundosRecorrido` y `recorrido.letreros` (2 frases por recorrido).
+
+## El sueño
+El juego empieza con el erizo dormido en su camita diciendo la frase de `sueno.frase`, y termina cuando despierta con `sueno.despertar` (en `config.js`).

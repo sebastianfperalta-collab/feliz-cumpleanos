@@ -205,3 +205,23 @@ export function crearFarol() {
   const b = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 8), new THREE.MeshBasicMaterial({ color: 0xffd27a })); b.position.y = 1.38; g.add(b);
   return g;
 }
+
+// ── Camita del erizo (inicio y final del sueño) ──
+export function crearCama() {
+  const L = new Lote();
+  const MADERA = 0x8a5a3a;
+  L.add(new THREE.BoxGeometry(1.3, 0.3, 2.1), MADERA, null, M4(0, 0.22, 0), { var: 0.1 });
+  L.add(new THREE.BoxGeometry(1.36, 0.9, 0.1), MADERA, null, M4(0, 0.45, -1.07), { var: 0.1, g: [0.8, 1.05] });
+  L.add(new THREE.BoxGeometry(1.36, 0.55, 0.1), MADERA, null, M4(0, 0.3, 1.07), { var: 0.1 });
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) L.add(new THREE.CylinderGeometry(0.06, 0.06, 1.0, 8), 0x6e4630, null, M4(sx * 0.66, sz < 0 ? 0.5 : 0.36, sz * 1.07), {});
+  L.add(new THREE.BoxGeometry(1.22, 0.18, 2.0, 4, 1, 6), 0xc9b6f0, null, M4(0, 0.45, 0), { suave: true });
+  // almohada azul esponjada
+  L.add(new THREE.SphereGeometry(1, 20, 12), 0x9fb8ff, null, M4(0, 0.6, -0.68, 0, 0, 0, 0.5, 0.13, 0.28), { suave: true, g: [0.75, 1.1] });
+  // cobija naranja y rosada con pliegues
+  const cob = new THREE.BoxGeometry(1.32, 0.16, 1.35, 10, 2, 10), p = cob.attributes.position;
+  for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), y = p.getY(i); if (y > 0) p.setY(i, y + Math.sin(x * 9) * 0.025 + Math.cos(z * 7) * 0.02 + Math.max(0, 0.12 - Math.hypot(x, z + 0.55) * 0.25)); if (Math.abs(x) > 0.6 && y < 0) p.setY(i, y - 0.12); }
+  L.add(cob, (x, y, z) => (Math.floor((z + 1) * 3.2) % 2 ? 0xff8a3d : 0xff6f91), null, M4(0, 0.6, 0.32), { suave: true, g: [0.7, 1.08] });
+  L.add(new THREE.CylinderGeometry(0.09, 0.09, 1.34, 12), 0xffe0b0, null, M4(0, 0.69, -0.36, 0, 0, Math.PI / 2), { suave: true });
+  const m = L.malla(lam()); m.position.set(0, 0, -0.2);
+  return m;
+}

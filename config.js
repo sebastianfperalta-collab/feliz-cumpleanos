@@ -41,5 +41,11 @@ window.DEMO_CONFIG = {
       ["Los hongos brillan para darte la bienvenida", "Lo bueno llega caminando despacio"],
       ["Ya huele a pastel...", "El claro está al final del sendero"]
     ]
+  },
+
+  // Todo el juego es un sueño del erizo: la frase al dormirse y la del despertar
+  sueno: {
+    frase: "Soy un pastelito horneado de canela...",
+    despertar: "¿Fue un sueño? Feliz cumpleaños, pastelito de canela 🎂"
   }
 };
