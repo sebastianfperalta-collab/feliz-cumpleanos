@@ -1,17 +1,17 @@
-# Feliz cumpleaños, Ana
+# El erizo de Ana
 
 Juego web de cumpleaños para el celular. Se juega en un bosque de noche con luciérnagas y un erizo pigmeo, y no hay que instalar nada.
 
 ## Retos
-1. **El bosque**: hay que tocar al erizo cuando se asoma entre los arbustos, antes de que se enrolle. Al terminar se desbloquea la foto 1.
+1. **El bosque**: hay que tocar al erizo cuando se asoma entre los arbustos, antes de que se enrolle. Al terminar se desbloquea el mensaje 1.
 2. **La bolita**: el erizo va enrollado y se guía inclinando el celular, o manteniendo presionado el lado izquierdo o derecho de la pantalla. Hay que esquivar troncos y piedras. Al chocar, vuelve al último farol. Al terminar se desbloquea la foto 2.
 3. **La lluvia de dulces**: se mueve el plato para atrapar dulces, y cada una suma una capa al pastel. Las piedras grises restan 3 segundos. Si no se logra a tiempo, se puede reintentar. Al terminar se desbloquea la foto 3.
 4. **Las velas**: se sopla al micrófono para apagar las 32 velas. Si se sopla demasiado fuerte, algunas se vuelven a encender. También hay un botón para soplar sin micrófono.
-5. **Carta final**: lleva las 3 fotos, el mensaje y la firma, y se puede descargar como imagen PNG.
+5. **Carta final**: lleva el mensaje y la firma, y se puede descargar como imagen PNG.
 
 ## Qué se edita (config.js)
 - `nombre`, `edad` (cantidad de velas) y `firma`.
-- `fotos`: cada foto con su texto (están en la carpeta `img`).
+- `recuerdos`: los mensajes que se desbloquean tras los retos 1 y 2.
 - `mensaje`: los párrafos de la carta.
 - `retos`: la dificultad de cada reto.
 
@@ -23,9 +23,7 @@ Juego web de cumpleaños para el celular. Se juega en un bosque de noche con luc
 ## Créditos técnicos
 three.js 0.160 (MIT). Fuentes Fredoka, Nunito y Caveat (Google Fonts, OFL). Los sonidos se sintetizan en el navegador. "Cumpleaños feliz" es una melodía tradicional.
 
-## Recorridos por el bosque
-Entre el reto 1 y el 2 el erizo camina por el sendero (vista desde atrás): toca las luces que flotan y lee los letreros.
-En `config.js`: `retos.segundosRecorrido` y `recorrido.letreros` (2 frases por recorrido).
 
-## El sueño
-El juego empieza con el erizo dormido en su camita diciendo la frase de `sueno.frase`, y termina cuando despierta con `sueno.despertar` (en `config.js`).
+## Recorridos por el bosque
+Entre cada reto el erizo camina por el sendero con cámara lateral: toca las luces que flotan (✨) y lee los letreros de madera.
+En `config.js`: `retos.segundosRecorrido` (duración) y `recorrido.letreros` (2 frases por recorrido, 3 recorridos).

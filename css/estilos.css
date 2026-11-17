@@ -106,3 +106,6 @@ h2 { font-size: 30px; color: var(--oro); }
 #soplido-aire { display: block; height: 100%; width: 100%; background: #9fd8ff; border-radius: 99px; transition: background .2s; }
 #soplido-aire.vacio { background: #ff8a8a; }
 .medidor .zona { transition: width .3s; }
+
+.polaroid { padding-top: 26px; }
+#foto-texto { font-size: 22px; line-height: 1.35; }

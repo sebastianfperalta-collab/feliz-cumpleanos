@@ -118,12 +118,11 @@ function transicion(texto, cambio) {
     t.classList.remove('on'); await espera(500); mostrar(t, false); res();
   });
 }
-const imgs = (cfg.fotos || []).map((f) => { const i = new Image(); i.src = f.src; return i; });
 function desbloquear(i) {
   return new Promise((res) => {
-    const f = cfg.fotos[i]; if (!f) return res();
-    $('#foto-sobre').textContent = `Recuerdo desbloqueado · ${i + 1} de ${cfg.fotos.length}`;
-    $('#foto-img').src = f.src; $('#foto-texto').textContent = f.texto || '';
+    const f = (cfg.recuerdos || [])[i]; if (!f) return res();
+    $('#foto-sobre').textContent = `Mensaje desbloqueado · ${i + 1} de ${cfg.recuerdos.length}`;
+    $('#foto-texto').textContent = f.texto || '';
     audio.foto(); mostrar($('#foto'));
     $('#foto-btn').onclick = () => { audio.clic(); mostrar($('#foto'), false); res(); };
   });
@@ -555,7 +554,6 @@ async function despertar() {
 function mostrarCarta() {
   progreso(4); mostrar($('#hud'), false);
   $('#carta-titulo').textContent = '¡Feliz cumple...!';
-  $('#carta-fotos').innerHTML = cfg.fotos.map((f) => `<img src="${esc(f.src)}" alt="">`).join('');
   $('#carta-texto').innerHTML = cfg.mensaje.map((p) => `<p>${esc(p)}</p>`).join('');
   $('#carta-firma').textContent = `Con cariño, ${cfg.firma}`;
   mostrar($('#carta'));
@@ -571,16 +569,8 @@ async function descargarCarta() {
   x.textAlign = 'center'; x.fillStyle = '#7ff6ff'; x.font = '800 30px Nunito, sans-serif'; x.fillText(`${cfg.edad} VELAS APAGADAS`, W / 2, 120);
   x.fillStyle = '#ffd27a'; x.font = '700 78px Fredoka, sans-serif'; x.shadowColor = 'rgba(255,190,90,0.6)'; x.shadowBlur = 30;
   x.fillText('¡Feliz cumple...!', W / 2, 260); x.shadowBlur = 0;
-  // polaroids
-  const pos = [[250, 560, -0.12], [540, 545, 0.05], [830, 560, -0.04]];
-  imgs.forEach((im, i) => {
-    const [cx, cy, rot] = pos[i] || pos[0]; x.save(); x.translate(cx, cy); x.rotate(rot);
-    x.shadowColor = 'rgba(0,0,0,0.5)'; x.shadowBlur = 30; x.fillStyle = '#fbf8f1'; x.fillRect(-140, -170, 280, 340); x.shadowBlur = 0;
-    if (im.complete && im.naturalWidth) { const iw = 250, ih = 290, s = Math.max(iw / im.naturalWidth, ih / im.naturalHeight), sw = iw / s, sh = ih / s; x.drawImage(im, (im.naturalWidth - sw) / 2, (im.naturalHeight - sh) / 2, sw, sh, -125, -155, iw, ih); }
-    x.restore();
-  });
   // texto
-  const parrafos = cfg.mensaje, maxW = 880, y0 = 800, yMax = H - 230;
+  const parrafos = cfg.mensaje, maxW = 880, y0 = 470, yMax = H - 230;
   let fs = 50, lineas;
   const partir = (t) => { const ws = t.split(' '), out = []; let l = ''; for (const w of ws) { const p = l ? l + ' ' + w : w; if (x.measureText(p).width > maxW && l) { out.push(l); l = w; } else l = p; } if (l) out.push(l); return out; };
   while (fs > 28) { x.font = `500 ${fs}px Caveat, cursive`; lineas = parrafos.map(partir); const alto = lineas.reduce((a, ls) => a + ls.length * fs * 1.15 + fs * 0.5, 0); if (y0 + alto < yMax) break; fs -= 2; }
@@ -600,7 +590,7 @@ $('#carta-ver').onclick = () => { mostrar($('#carta'), false); toast('Recarga la
 
 // ───────── Inicio ─────────
 $('#intro-titulo').textContent = 'El erizo cumpleañero';
-$('#intro-bajada').innerHTML = `Es la noche antes de tu cumpleaños. Tu erizo se acurrucó en su camita… y empezó a soñar. En el sueño, tu pastel desapareció en el bosque. <b>Supera los 4 retos</b> y desbloquea los recuerdos en el camino.`;
+$('#intro-bajada').innerHTML = `Es la noche antes de tu cumpleaños. Tu erizo se acurrucó en su camita… y empezó a soñar. En el sueño, tu pastel desapareció en el bosque. <b>Supera los 4 retos</b> y desbloquea los mensajes en el camino.`;
 escenaCama(true); respirar(); cam.orbita = false;
 $('#btn-sonido').onclick = () => { audio.setMudo(!audio.mudo); $('#btn-sonido').textContent = audio.mudo ? '🔇' : '🔊'; };
 

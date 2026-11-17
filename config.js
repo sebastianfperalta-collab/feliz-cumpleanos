@@ -9,11 +9,10 @@ window.DEMO_CONFIG = {
   edad: 32,              // número de velas del pastel
   firma: "Sebastián",
 
-  // Fotos que se desbloquean al terminar los retos 1, 2 y 3 (carpeta img)
-  fotos: [
-    { src: "img/ana1.jpg", texto: "¡Feliz cumple...! 🎂 Que este año tenga la misma luz de ese día, con esa sonrisa que contagia y mucha energía para todo lo que venga. Un abrazo grande 🥳" },
-    { src: "img/ana2.jpg", texto: "¡Feliz cumple...! 🌸 Te deseo un día lleno de risas, comida rica y gente linda, y un año que florezca con planes que te emocionen y momentos memorables. Un abrazo grande 🥳" },
-    { src: "img/ana3.jpg", texto: "Paciencia, manos y mucho corazón." }
+  // Mensajes que se desbloquean al terminar los retos 1 y 2
+  recuerdos: [
+    { texto: "¡Feliz cumple...! 🎂 Que este año tenga la misma luz de ese día, con esa sonrisa que contagia y mucha energía para todo lo que venga. Un abrazo grande 🥳" },
+    { texto: "¡Feliz cumple...! 🌸 Te deseo un día lleno de risas, comida rica y gente linda, y un año que florezca con planes que te emocionen y momentos memorables. Un abrazo grande 🥳" }
   ],
 
   // Carta final (cada línea es un párrafo). Puedes agregar un recuerdo que compartan.
